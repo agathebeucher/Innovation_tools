@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>BMC Visuel</title>
+
+<style>
+:root {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --text: #0f172a;
+}
+
+/* BASE */
+body {
+  margin: 0;
+  font-family: system-ui;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  margin-bottom: 10px;
+}
+
+/* TOOLBAR */
+.toolbar {
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* GRID BMC */
+.grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-areas:
+    "part act vp rel seg"
+    "part act vp rel seg"
+    "res act vp chan seg"
+    "cost cost rev rev seg";
+}
+
+/* CARDS */
+.card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+}
+
+.card h3 {
+  margin: 0 0 6px;
+  font-size: 13px;
+}
+
+/* COLORS */
+.part { background:#eef2ff }
+.act { background:#ecfeff }
+.res { background:#f0fdf4 }
+.vp { background:#fff7ed }
+.rel { background:#fdf2f8 }
+.chan { background:#f1f5f9 }
+.seg { background:#fefce8 }
+.cost { background:#fee2e2 }
+.rev { background:#dcfce7 }
+
+/* AREAS */
+#part { grid-area: part }
+#act { grid-area: act }
+#res { grid-area: res }
+#vp { grid-area: vp }
+#rel { grid-area: rel }
+#chan { grid-area: chan }
+#seg { grid-area: seg }
+#cost { grid-area: cost }
+#rev { grid-area: rev }
+
+/* TEXTAREA */
+textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  resize: none;
+  min-height: 120px;
+  font-size: 14px;
+}
+
+/* PROMPT */
+.prompt-box {
+  margin-top: 25px;
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+/* MOBILE */
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "vp" "seg" "part" "act" "res"
+      "rel" "chan" "cost" "rev";
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🧠 Business Model Canvas</h1>
+
+<div class="toolbar">
+  <button onclick="exportPDF()">📄 Export PDF</button>
+</div>
+
+<div class="grid">
+
+<div class="card part" id="part">
+  <h3>🤝 Partenaires</h3>
+  <textarea id="part_t"></textarea>
+</div>
+
+<div class="card act" id="act">
+  <h3>🔧 Activités</h3>
+  <textarea id="act_t"></textarea>
+</div>
+
+<div class="card res" id="res">
+  <h3>🧰 Ressources</h3>
+  <textarea id="res_t"></textarea>
+</div>
+
+<div class="card vp" id="vp">
+  <h3>💎 Proposition de valeur</h3>
+  <textarea id="vp_t"></textarea>
+</div>
+
+<div class="card rel" id="rel">
+  <h3>❤️ Relations</h3>
+  <textarea id="rel_t"></textarea>
+</div>
+
+<div class="card chan" id="chan">
+  <h3>📦 Canaux</h3>
+  <textarea id="chan_t"></textarea>
+</div>
+
+<div class="card seg" id="seg">
+  <h3>🧍‍♀️ Clients</h3>
+  <textarea id="seg_t"></textarea>
+</div>
+
+<div class="card cost" id="cost">
+  <h3>💰 Coûts</h3>
+  <textarea id="cost_t"></textarea>
+</div>
+
+<div class="card rev" id="rev">
+  <h3>💸 Revenus</h3>
+  <textarea id="rev_t"></textarea>
+</div>
+
+</div>
+
+<div class="prompt-box">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+    <h3 style="margin:0;">Prompt IA</h3>
+    <button onclick="copyPrompt()">📋 Copier</button>
+  </div>
+
+  <textarea id="prompt">
+Objectif : aide à faire un bon BMC pour clarifier, challenger, détecter l’incohérence, pousser à choisir et à prouver. L’IA a pour rôle de compenser les biais qui rende le BMC : 
+-	Trop flous (Segments de clients trop larges, bénéfices génériques, valeur floue)
+-	Trop “wishful thinking” (hypothèses posées comme des certitudes.)
+-	Trop orientés solution (parle de la techno, jamais des pains réels)
+-	Pas assez questionné
+-	
+Prompt : « Ton rôle n’est pas de remplir le BMC, mais d’aider l’équipe à clarifier, prioriser et challenger son raisonnement (les humains ont tendance à produire des BMC flous, orientés solution et peu discutés).
+À partir du BMC ci dessous, produis quatre sections :
+1.	Points flous / trop larges / non priorisés
+→ Identifie ce qui manque de précision et comment le préciser.
+2.	Hypothèses déguisées en certitudes
+→ Reformule-les sous forme de questions à se poser.
+3.	Incohérences entre cases
+→ Signale-les et pose des questions pour les éclaircir.
+4.	3 questions clés manquantes
+→ Pour pousser l’équipe à clarifier, prioriser, prouver et renforcer la proposition de valeur.
+Contraintes :
+•	Style simple, direct
+•	Maximum 10 lignes par section
+•	Ne jamais remplir le BMC à la place du groupe
+•	Viser la qualité du raisonnement plutôt que l’exhaustivité
+Voici le BMC : 
+
+</textarea>
+</div>
+
+</div>
+
+<script>
+const ids = ["part","act","res","vp","rel","chan","seg","cost","rev"];
+
+ids.forEach(id => {
+  const el = document.getElementById(id+"_t");
+  el.value = localStorage.getItem(id) || "";
+  el.oninput = () => localStorage.setItem(id, el.value);
+});
+
+function val(id){
+  return document.getElementById(id+"_t").value || "—";
+}
+
+function exportPDF(){
+  const content = `
+<h2>BMC</h2>
+<p><b>Clients:</b><br>${val("seg")}</p>
+<p><b>Valeur:</b><br>${val("vp")}</p>
+<p><b>Canaux:</b><br>${val("chan")}</p>
+<p><b>Relations:</b><br>${val("rel")}</p>
+<p><b>Revenus:</b><br>${val("rev")}</p>
+<p><b>Ressources:</b><br>${val("res")}</p>
+<p><b>Activités:</b><br>${val("act")}</p>
+<p><b>Partenaires:</b><br>${val("part")}</p>
+<p><b>Coûts:</b><br>${val("cost")}</p>
+`.replace(/\n/g,"<br>");
+
+  const w = window.open("");
+  w.document.write(`
+  <html><body style="font-family:Arial;padding:20px;">
+  ${content}
+  <script>setTimeout(()=>window.print(),300)<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
+function copyPrompt(){
+  const txt = document.getElementById("prompt");
+  txt.select();
+  document.execCommand("copy");
+  alert("Prompt copié !");
+}
+</script>
+
+</body>
+</html>
